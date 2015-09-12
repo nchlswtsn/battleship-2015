@@ -17,7 +17,7 @@ function init(){
     $quare.on("click", placeShips);
 
     function isValid(tiles){
-        var valid=true
+      var valid=true
       tiles.forEach(function(tile){
         if (tile.hasClass("ship")){
           valid = false;
@@ -102,10 +102,12 @@ function init(){
 
     function hitOrNah(e){
       var hits = 0
-      var $explode = $('#explode');
-      console.log($explode);
-      var $plash = $('#splash');
-      console.log($plash);
+      // var $explode = $('#explode');
+      // console.log($explode);
+      // var $plash = $('#splash');
+      // console.log($plash);
+      var splash = new Audio("splash.wav");
+      var explosion = new Audio("explosion.wav");
       var $guessedSquare = $(this);
       var squareVal = $guessedSquare.data("id");
       fireRef.once('value', function(dataSnapshot){
@@ -114,14 +116,14 @@ function init(){
         hit = ob.shipLocations.shipLocations[squareVal]
         if(hit){
           $guessedSquare.addClass("hit");
-          $explode.attr('src', 'explosion.wav');
           hits++
-          $explode.attr('src', 'filler');
+          explosion.play();
         }
         else {
           $guessedSquare.addClass("miss");
-          $plash.attr('src', 'splash.wav');
-          $plash.attr('src', 'filler');
+          // $plash.attr('src', 'splash.wav');
+          // $plash.attr('src', 'filler');
+          splash.play();
         }
       })
     }
