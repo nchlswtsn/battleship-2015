@@ -13,21 +13,10 @@ function init(){
       console.log(shipsToPlace);
       if(shipsToPlace){
         var $placement = $(this),
-        $firstTile,
-        $econdTile;
-        if ($placement.next()["length"]===0){
-          $econdTile = $placement.prev().prev()
-          $firstTile = $placement.prev()
-        } else if($placement.prev()["length"]===0){
-          $firstTile = $placement.next().next()
-          $econdTile = $placement.next()
-        }else{
-          $firstTile = $placement.next()
-          $econdTile = $placement.prev()
-        }
-        $firstTile.addClass("ship").off();
-        $econdTile.addClass("ship").off();
-        $placement.addClass("ship").off();
+        tiles = getObject($placement)
+        tiles["firstTile"].addClass("ship");
+        tiles["secondTile"].addClass("ship");
+        tiles["initialTile"].addClass("ship");
         if(!(--shipsToPlace)){
           $quare.off()
           gameBegin
@@ -35,30 +24,36 @@ function init(){
       }
 
     }
-
     function highlightPlacement(){
       var $placement = $(this),
-      $firstTile,
-      $econdTile;
-      if ($placement.next()["length"]===0){
-        $econdTile = $placement.prev().prev()
-        $firstTile = $placement.prev()
-      } else if($placement.prev()["length"]===0){
-        $firstTile = $placement.next().next()
-        $econdTile = $placement.next()
-      }else{
-        $firstTile = $placement.next()
-        $econdTile = $placement.prev()
-      }
-      $firstTile.toggleClass("highlight");
-      $econdTile.toggleClass("highlight");
-      $placement.toggleClass("highlight");
+      tiles = getObject($placement);
+      tiles["firstTile"].toggleClass("highlight");
+      tiles["secondTile"].toggleClass("highlight");
+      tiles["initialTile"].toggleClass("highlight");
     }
   }
 
   function getObject(placement){
-
-  }
+      console.log(placement.data("id"));
+      var secondTile,
+      firstTile;
+      if (placement.data("id")===10){
+        secondTile = placement.prev().prev()
+        firstTile = placement.prev()
+        console.log(secondTile);
+      } else if(placement.data("id")===1){
+        firstTile = placement.next().next()
+        secondTile = placement.next()
+      }else{
+        firstTile = placement.next()
+        secondTile = placement.prev()
+      }
+      var obj = {
+        firstTile: firstTile, secondTile: secondTile, initialTile: placement
+      }
+      console.log(obj);
+      return obj
+    }
 
   function gameBegin(){
     $quare.click(hitOrNah)
