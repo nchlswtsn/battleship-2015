@@ -61,9 +61,10 @@ function init(){
     $quare.click(hitOrNah)
 
     function hitOrNah(e){
-      var $guessedSquare = $(this)
+      var $guessedSquare = $(this);
+      var squareVal = $guessedSquare.data("id")
       //some firebase to determine if square is hit
-      
+
       if (hit){
         $guessedSquare.addClass("hit");
       }
