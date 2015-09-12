@@ -2,21 +2,23 @@
 // var fireRef = new Firebase("https://battleship-2015.firebaseio.com/");
 
 function init(){
-  var $quare = $("td.player");
+  var $quare = $(".PlayBoard td");
   function preGame(){
-    var shipsToPlace = 5;
+    var shipsToPlace = 5,
+    shipPlacements = [];
     $quare.hover(highlightPlacement);
-    // $quare.on("mouseleave", dehighlightPlacement)
     $quare.on("click", placeShips);
 
     function placeShips(e){
+      //player can place ship in other ship if placed adjacent
       console.log(shipsToPlace);
       if(shipsToPlace){
         var $placement = $(this),
-        tiles = getObject($placement)
-        tiles["firstTile"].addClass("ship");
-        tiles["secondTile"].addClass("ship");
-        tiles["initialTile"].addClass("ship");
+        tiles = getTiles($placement)
+        console.log(tiles[1].data("id"));
+        tiles.forEach(function(tile){
+          tile.addClass("ship");
+        });
         if(!(--shipsToPlace)){
           $quare.off()
           gameBegin
@@ -26,14 +28,14 @@ function init(){
     }
     function highlightPlacement(){
       var $placement = $(this),
-      tiles = getObject($placement);
-      tiles["firstTile"].toggleClass("highlight");
-      tiles["secondTile"].toggleClass("highlight");
-      tiles["initialTile"].toggleClass("highlight");
+      tiles = getTiles($placement);
+      tiles.forEach(function(tile){
+        tile.toggleClass("highlight");
+      });
     }
   }
 
-  function getObject(placement){
+  function getTiles(placement){
       console.log(placement.data("id"));
       var secondTile,
       firstTile;
@@ -48,11 +50,10 @@ function init(){
         firstTile = placement.next()
         secondTile = placement.prev()
       }
-      var obj = {
-        firstTile: firstTile, secondTile: secondTile, initialTile: placement
-      }
-      console.log(obj);
-      return obj
+      var tiles = []
+        tiles.push(firstTile, secondTile, placement)
+        console.log(tiles);
+      return tiles
     }
 
   function gameBegin(){
@@ -60,7 +61,7 @@ function init(){
 
     function hitOrNah(e){
       var $guessedSquare = $(this)
-      //some firebending to determine if square is hit
+      //some firebase to determine if square is hit
       if (hit){
         $guessedSquare.addClass("hit");
       }
