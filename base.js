@@ -1,3 +1,5 @@
+// go()
+
 function go() {
   var userId = prompt('Username?', 'Guest');
   var gameRef = new Firebase("https://battleship-2015.firebaseio.com/");
