@@ -1,5 +1,5 @@
 "use strict";
-// var fireRef = new Firebase("https://battleship-2015.firebaseio.com/");
+var fireRef = new Firebase("https://battleship-2015.firebaseio.com/");
 
 function init(){
   var $quare = $(".PlayBoard td"),
@@ -7,7 +7,6 @@ function init(){
   for (var i =0; i<100;i++){
     shipPlacements.push(false);
   }
-  console.log(shipPlacements);
   function preGame(){
     var shipsToPlace = 5;
     $quare.hover(highlightPlacement);
@@ -22,10 +21,9 @@ function init(){
           tile.addClass("ship");
           shipPlacements[tile.data("id")]=true;
         });
-        console.log(shipPlacements);
         if(!(--shipsToPlace)){
           $quare.off()
-          gameBegin
+          gameBegin()
         }
       }
 
@@ -58,28 +56,35 @@ function init(){
   }
 
   function gameBegin(){
-    $quare.click(hitOrNah)
+    var gameSet = fireRef.child("shipLocations");
+
+    gameSet.set({
+      shipLocations: shipPlacements
+    })
+    $(".OppBoard td").click(hitOrNah)
+
 
     function hitOrNah(e){
       var $guessedSquare = $(this);
-      var squareVal = $guessedSquare.data("id")
-      //some firebase to determine if square is hit
-
-      if (hit){
-        $guessedSquare.addClass("hit");
-      }
-      else {
-        $guessedSquare.addClass("miss");
-      }
+      var squareVal = $guessedSquare.data("id");
+      fireRef.once('value', function(dataSnapshot){
+      var hit;
+      var ob = dataSnapshot.val();
+        hit = ob.shipLocations.shipLocations[squareVal]
+        if(hit){
+          $guessedSquare.addClass("hit");
+        }
+        else {
+          $guessedSquare.addClass("miss");
+        }
+      })
     }
-
   }
   preGame()
-
 }
 
 
-var fakeOponentArray = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, false, false, false, true, true, true, false, false, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true]
+
 
 
 
