@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Battleship</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Let's Play Battleships!</h1>
+  <div class="PlayBoard">
+    <table>
+      <tbody>
+        <tr id="J">
+          <td class="1"></td>
+          <td class="2"></td>
+          <td class="3"></td>
+          <td class="4"></td>
+          <td class="5"></td>
+          <td class="6"></td>
+          <td class="7"></td>
+          <td class="8"></td>
+          <td class="9"></td>
+          <td class="10"></td>
+        </tr>
+        <tr id="I">
+          <td class="1"></td>
+          <td class="2"></td>
+          <td class="3"></td>
+          <td class="4"></td>
+          <td class="5"></td>
+          <td class="6"></td>
+          <td class="7"></td>
+          <td class="8"></td>
+          <td class="9"></td>
+          <td class="10"></td>
+        </tr>
+        <tr id="H">
+          <td class="1"></td>
+          <td class="2"></td>
+          <td class="3"></td>
+          <td class="4"></td>
+          <td class="5"></td>
+          <td class="6"></td>
+          <td class="7"></td>
+          <td class="8"></td>
+          <td class="9"></td>
+          <td class="10"></td>
+        </tr>
+        <tr id="G">
+          <td class="1"></td>
+          <td class="2"></td>
+          <td class="3"></td>
+          <td class="4"></td>
+          <td class="5"></td>
+          <td class="6"></td>
+          <td class="7"></td>
+          <td class="8"></td>
+          <td class="9"></td>
+          <td class="10"></td>
+        </tr>
+        <tr id="F">
+          <td class="1"></td>
+          <td class="2"></td>
+          <td class="3"></td>
+          <td class="4"></td>
+          <td class="5"></td>
+          <td class="6"></td>
+          <td class="7"></td>
+          <td class="8"></td>
+          <td class="9"></td>
+          <td class="10"></td>
+        </tr>
+        <tr id="E">
+          <td class="1"></td>
+          <td class="2"></td>
+          <td class="3"></td>
+          <td class="4"></td>
+          <td class="5"></td>
+          <td class="6"></td>
+          <td class="7"></td>
+          <td class="8"></td>
+          <td class="9"></td>
+          <td class="10"></td>
+        </tr>
+        <tr id="D">
+          <td class="1"></td>
+          <td class="2"></td>
+          <td class="3"></td>
+          <td class="4"></td>
+          <td class="5"></td>
+          <td class="6"></td>
+          <td class="7"></td>
+          <td class="8"></td>
+          <td class="9"></td>
+          <td class="10"></td>
+        </tr>
+        <tr id="C">
+          <td class="1"></td>
+          <td class="2"></td>
+          <td class="3"></td>
+          <td class="4"></td>
+          <td class="5"></td>
+          <td class="6"></td>
+          <td class="7"></td>
+          <td class="8"></td>
+          <td class="9"></td>
+          <td class="10"></td>
+        </tr>
+        <tr id="B">
+          <td class="1"></td>
+          <td class="2"></td>
+          <td class="3"></td>
+          <td class="4"></td>
+          <td class="5"></td>
+          <td class="6"></td>
+          <td class="7"></td>
+          <td class="8"></td>
+          <td class="9"></td>
+          <td class="10"></td>
+        </tr>
+        <tr id="A">
+          <td class="1"></td>
+          <td class="2"></td>
+          <td class="3"></td>
+          <td class="4"></td>
+          <td class="5"></td>
+          <td class="6"></td>
+          <td class="7"></td>
+          <td class="8"></td>
+          <td class="9"></td>
+          <td class="10"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!--  TABLE TWO STARTS HERE  -->
+  <div class="OppBoard">
+    <table>
+      <tbody>
+        <tr id="J">
+          <td class="1"></td>
+          <td class="1"></td>
+          <td class="1"></td>
+          <td class="1"></td>
+          <td class="1"></td>
+          <td class="1"></td>
+          <td class="1"></td>
+          <td class="1"></td>
+          <td class="1"></td>
+          <td class="1"></td>
+        </tr>
+        <tr id="I">
+          <td class="2"></td>
+          <td class="2"></td>
+          <td class="2"></td>
+          <td class="2"></td>
+          <td class="2"></td>
+          <td class="2"></td>
+          <td class="2"></td>
+          <td class="2"></td>
+          <td class="2"></td>
+          <td class="2"></td>
+        </tr>
+        <tr id="H">
+          <td class="1"></td>
+          <td class="2"></td>
+          <td class="3"></td>
+          <td class="4"></td>
+          <td class="5"></td>
+          <td class="6"></td>
+          <td class="7"></td>
+          <td class="8"></td>
+          <td class="9"></td>
+          <td class="10"></td>
+        </tr>
+        <tr id="G">
+          <td class="1"></td>
+          <td class="2"></td>
+          <td class="3"></td>
+          <td class="4"></td>
+          <td class="5"></td>
+          <td class="6"></td>
+          <td class="7"></td>
+          <td class="8"></td>
+          <td class="9"></td>
+          <td class="10"></td>
+        </tr>
+        <tr id="F">
+          <td class="1"></td>
+          <td class="2"></td>
+          <td class="3"></td>
+          <td class="4"></td>
+          <td class="5"></td>
+          <td class="6"></td>
+          <td class="7"></td>
+          <td class="8"></td>
+          <td class="9"></td>
+          <td class="10"></td>
+        </tr>
+        <tr id="E">
+          <td class="1"></td>
+          <td class="2"></td>
+          <td class="3"></td>
+          <td class="4"></td>
+          <td class="5"></td>
+          <td class="6"></td>
+          <td class="7"></td>
+          <td class="8"></td>
+          <td class="9"></td>
+          <td class="10"></td>
+        </tr>
+        <tr id="D">
+          <td class="1"></td>
+          <td class="2"></td>
+          <td class="3"></td>
+          <td class="4"></td>
+          <td class="5"></td>
+          <td class="6"></td>
+          <td class="7"></td>
+          <td class="8"></td>
+          <td class="9"></td>
+          <td class="10"></td>
+        </tr>
+        <tr id="C">
+          <td class="1"></td>
+          <td class="2"></td>
+          <td class="3"></td>
+          <td class="4"></td>
+          <td class="5"></td>
+          <td class="6"></td>
+          <td class="7"></td>
+          <td class="8"></td>
+          <td class="9"></td>
+          <td class="10"></td>
+        </tr>
+        <tr id="B">
+          <td class="1"></td>
+          <td class="2"></td>
+          <td class="3"></td>
+          <td class="4"></td>
+          <td class="5"></td>
+          <td class="6"></td>
+          <td class="7"></td>
+          <td class="8"></td>
+          <td class="9"></td>
+          <td class="10"></td>
+        </tr>
+        <tr id="A">
+          <td class="1"></td>
+          <td class="2"></td>
+          <td class="3"></td>
+          <td class="4"></td>
+          <td class="5"></td>
+          <td class="6"></td>
+          <td class="7"></td>
+          <td class="8"></td>
+          <td class="9"></td>
+          <td class="10"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <script src="https://cdn.firebase.com/js/client/2.2.9/firebase.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <meta charset="UTF-8">
+  <script src="main.js" charset="utf-8"></script>
+</body>
+</html>
