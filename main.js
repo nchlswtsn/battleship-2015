@@ -1,5 +1,5 @@
 "use strict";
-// var fireRef = new Firebase("https://battleship-2015.firebaseio.com/");
+var fireRef = new Firebase("https://battleship-2015.firebaseio.com/");
 
 function init(){
   var rotated = false
@@ -20,19 +20,16 @@ function init(){
         var valid=true
       tiles.forEach(function(tile){
         if (tile.hasClass("ship")){
-          console.log(tile);
           valid = false;
         }
       })
       return valid;
     }
 
-    function placeShips(e){
-      // player can place ship in other ship if placed adjacent
+    function placeShips(){
       if(shipsToPlace){
         var $placement = $(this),
         tiles = getTiles($placement)
-        console.log(isValid(tiles));
         if (isValid(tiles)){
           tiles.forEach(function(tile){
             tile.addClass("ship").off();
@@ -102,8 +99,6 @@ function init(){
       shipLocations: shipPlacements
     })
     $(".OppBoard td").click(hitOrNah)
-
-
 
     function hitOrNah(e){
       var hits = 0

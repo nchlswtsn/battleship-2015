@@ -24,7 +24,7 @@ td {
   background-color: silver;
 }
 td.hit {
-  background-color: red;
+  background-color: darkred;
   width: 50px;
   height: 50px;
 }

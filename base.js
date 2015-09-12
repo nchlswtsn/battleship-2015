@@ -1,9 +1,14 @@
-// go()
-
+go()
+var usa = true
 function go() {
-  var userId = prompt('Username?', 'Guest');
-  var gameRef = new Firebase("https://battleship-2015.firebaseio.com/");
-  assignPlayerNumberAndPlayGame(userId, gameRef);
+  if (usa){
+    var userId = "USA";
+    usa = false;
+  }else {
+    userId = "USSR";
+  }
+  var fireRef = new Firebase("https://battleship-2015.firebaseio.com/");
+  assignPlayerNumberAndPlayGame(userId, fireRef);
 };
 
 // The maximum number of players.  If there are already
@@ -23,16 +28,16 @@ var PLAYER_DATA_LOCATION = 'player_data';
 
 
 // Called after player assignment completes.
-function playGame(myPlayerNumber, userId, justJoinedGame, gameRef) {
-  var playerDataRef = gameRef.child(PLAYER_DATA_LOCATION).child(myPlayerNumber);
+function playGame(myPlayerNumber, userId, justJoinedGame, fireRef) {
+  var playerDataRef = fireRef.child(PLAYER_DATA_LOCATION).child(myPlayerNumber);
   if (justJoinedGame) {
     playerDataRef.set({userId: userId, state: 'game state'});
   }
 }
 
 // Use transaction() to assign a player number, then call playGame().
-function assignPlayerNumberAndPlayGame(userId, gameRef) {
-  var playerListRef = gameRef.child(PLAYERS_LOCATION);
+function assignPlayerNumberAndPlayGame(userId, fireRef) {
+  var playerListRef = fireRef.child(PLAYERS_LOCATION);
   var myPlayerNumber, alreadyInGame = false;
 
   playerListRef.transaction(function(playerList) {
@@ -72,7 +77,7 @@ function assignPlayerNumberAndPlayGame(userId, gameRef) {
     // Transaction has completed.  Check if it succeeded or we were already in
     // the game and so it was aborted.
     if (committed || alreadyInGame) {
-      playGame(myPlayerNumber, userId, !alreadyInGame, gameRef);
+      playGame(myPlayerNumber, userId, !alreadyInGame, fireRef);
     } else {
       alert('Game is full.  Can\'t join. :-(');
     }
