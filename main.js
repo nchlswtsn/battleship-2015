@@ -11,13 +11,13 @@ function init(){
 
     function placeShips(e){
       //player can place ship in other ship if placed adjacent
-      console.log(shipsToPlace);
       if(shipsToPlace){
         var $placement = $(this),
         tiles = getTiles($placement)
-        console.log(tiles[1].data("id"));
         tiles.forEach(function(tile){
           tile.addClass("ship");
+          var obj={row: tile.parent().data("id"), col: tile.data("id")}
+          shipPlacements.push(obj)
         });
         if(!(--shipsToPlace)){
           $quare.off()
@@ -66,7 +66,7 @@ function init(){
         $guessedSquare.addClass("hit");
       }
       else {
-        $guessedSquare.addClass("hit");
+        $guessedSquare.addClass("miss");
       }
     }
 
