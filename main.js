@@ -102,6 +102,10 @@ function init(){
 
     function hitOrNah(e){
       var hits = 0
+      var $explode = $('#explode');
+      console.log($explode);
+      var $plash = $('#splash');
+      console.log($plash);
       var $guessedSquare = $(this);
       var squareVal = $guessedSquare.data("id");
       fireRef.once('value', function(dataSnapshot){
@@ -110,10 +114,14 @@ function init(){
         hit = ob.shipLocations.shipLocations[squareVal]
         if(hit){
           $guessedSquare.addClass("hit");
+          $explode.attr('src', 'explosion.wav');
           hits++
+          $explode.attr('src', 'filler');
         }
         else {
           $guessedSquare.addClass("miss");
+          $plash.attr('src', 'splash.wav');
+          $plash.attr('src', 'filler');
         }
       })
     }
