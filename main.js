@@ -2,7 +2,7 @@
 // var fireRef = new Firebase("https://battleship-2015.firebaseio.com/");
 
 function init(){
-  var $quare = $("td");
+  var $quare = $("td.player");
   function preGame(){
     var shipsToPlace = 5;
     $quare.hover(highlightPlacement);
