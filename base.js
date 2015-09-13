@@ -1,3 +1,4 @@
+// var Firebase = require('main.js');
 go()
 
 function go() {

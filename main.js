@@ -1,7 +1,47 @@
 "use strict";
 var fireRef = new Firebase("https://battleship-2015.firebaseio.com/");
+var themesong = new Audio("battlesongless.wav");
+
+// var qDuration=600;
+// var qCounter=0;
+// function quake(){
+//   // the horizontal displacement
+//   var deltaX=1;
+//   // make sure the browser support the moveBy method
+//   if (window.moveBy)
+//   {
+//     for (qCounter=0; qCounter<qDuration; qCounter++)
+//     {
+//       // shake left
+//       if ((qCounter%4)==0)
+//       {
+//         window.moveBy(deltaX, 0);
+//       }
+//       // shake right
+//       else if ((qCounter%4)==2)
+//       {
+//         window.moveBy(-deltaX, 0);
+//       }
+//       // speed up or slow down every X cycles
+//       if ((qCounter%30)==0)
+//       {
+//         // speed up halfway
+//         if (qCounter<qDuration/2)
+//         {
+//           deltaX++;
+//         }
+//         // slow down after halfway of the duration
+//         else
+//         {
+//           deltaX--;
+//         }
+//       }
+//     }
+//   }
+// }
 
 function init(){
+  themesong.play();
   var rotated = false
   var $quare = $(".PlayBoard td"),
   shipPlacements = [];
@@ -41,8 +81,8 @@ function init(){
           }
         }
       }
-
     }
+
     function highlightPlacement(){
       var $placement = $(this),
       tiles = getTiles($placement);
@@ -73,18 +113,18 @@ function init(){
       if (placement.data("id")<10){
         var x = placement.data("id")+10;
         var y = placement.data("id")+20;
-        firstTile = $("td.player[data-id='" + x+ "']");
-        secondTile = $("td.player[data-id='" + y+ "']");
+        firstTile = $("td.player[data-id='" + x + "']");
+        secondTile = $("td.player[data-id='" + y + "']");
       }else if(placement.data("id")>90){
         var x = placement.data("id")-10;
         var y = placement.data("id")-20;
-        firstTile = $("td.player[data-id='" + x+ "']");
-        secondTile = $("td.player[data-id='" + y+ "']");
+        firstTile = $("td.player[data-id='" + x + "']");
+        secondTile = $("td.player[data-id='" + y + "']");
       }else{
         var x = placement.data("id")-10;
         var y = placement.data("id")+10;
-        firstTile = $("td.player[data-id='" + x+ "']");
-        secondTile = $("td.player[data-id='" + y+ "']");
+        firstTile = $("td.player[data-id='" + x + "']");
+        secondTile = $("td.player[data-id='" + y + "']");
       }
     }
     var tiles = []
@@ -102,10 +142,6 @@ function init(){
 
     function hitOrNah(e){
       var hits = 0
-      // var $explode = $('#explode');
-      // console.log($explode);
-      // var $plash = $('#splash');
-      // console.log($plash);
       var splash = new Audio("splash.wav");
       var explosion = new Audio("explosion.wav");
       var $guessedSquare = $(this);
@@ -115,14 +151,18 @@ function init(){
         var ob = dataSnapshot.val();
         hit = ob.shipLocations.shipLocations[squareVal]
         if(hit){
+          // $('.oppBoard').attr('onLoad', 'quake();');
           $guessedSquare.addClass("hit");
           hits++
           explosion.play();
+          // console.log(hits);
+          // if(hits >= 15){
+          //   alert("YOU WIN!");
+          //
+          // }
         }
         else {
           $guessedSquare.addClass("miss");
-          // $plash.attr('src', 'splash.wav');
-          // $plash.attr('src', 'filler');
           splash.play();
         }
       })
@@ -211,19 +251,6 @@ function init(){
 //     }
 //   });
 // }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
