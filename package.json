@@ -1,7 +1,7 @@
 {
   "name": "battle",
   "version": "1.0.0",
-  "description": "",
+  "description": "Battleship game, built to practice using Firebase",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/nchlswtsn/battleship-2015.git"
   },
-  "author": "",
+  "author": "Charles Watson and Austin Ezell",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/nchlswtsn/battleship-2015/issues"
