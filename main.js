@@ -2,44 +2,6 @@
 var fireRef = new Firebase("https://battleship-2015.firebaseio.com/");
 var themesong = new Audio("battlesongless.wav");
 
-// function quake(){
-//   var qDuration=600;
-//   var qCounter=0;
-//   // the horizontal displacement
-//   var deltaX=1;
-//   // make sure the browser support the moveBy method
-//   if (window.moveBy)
-//   {
-//     for (qCounter=0; qCounter<qDuration; qCounter++)
-//     {
-//       // shake left
-//       if ((qCounter%4)==0)
-//       {
-//         window.moveBy(deltaX, 0);
-//       }
-//       // shake right
-//       else if ((qCounter%4)==2)
-//       {
-//         window.moveBy(-deltaX, 0);
-//       }
-//       // speed up or slow down every X cycles
-//       if ((qCounter%30)==0)
-//       {
-//         // speed up halfway
-//         if (qCounter<qDuration/2)
-//         {
-//           deltaX++;
-//         }
-//         // slow down after halfway of the duration
-//         else
-//         {
-//           deltaX--;
-//         }
-//       }
-//     }
-//   }
-// }
-
 function init(){
   themesong.play();
   var rotated = false
