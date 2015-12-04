@@ -7,6 +7,12 @@
 </head>
 <body>
   <div id="header"><img src="logo.png" alt=""></div>
+  <div id='playerDiv'>
+    <form id='addPlayer'>
+      <input required type="text" placeholder="username" id='name'/>
+      <input type='submit'>
+    </form>
+  </div>
   <div class="PlayBoard">
     <table>
       <tbody>
@@ -261,7 +267,8 @@
     </table>
   </div>
   <script src="base.js" charset="utf-8"></script>
-  <script src="https://cdn.firebase.com/js/client/2.2.9/firebase.js"></script>
+  <!-- <script src="https://cdn.firebase.com/js/client/2.2.9/firebase.js"></script> -->
+  <script src="bower_components/firebase/firebase-debug.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <meta charset="UTF-8">
   <script src="main.js" charset="utf-8"></script>

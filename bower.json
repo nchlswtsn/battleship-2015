@@ -1,0 +1,21 @@
+{
+  "name": "battle",
+  "description": "Battleship game, built to practice using Firebase",
+  "main": "main.js",
+  "authors": [
+    "Charles Watson and Austin Ezell"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/nchlswtsn/battleship-2015",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "firebase": "~2.3.2"
+  }
+}

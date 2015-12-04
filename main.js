@@ -1,22 +1,50 @@
 "use strict";
-var fireRef = new Firebase("https://battleship-2015.firebaseio.com/");
-var themesong = new Audio("battlesongless.wav");
+var battleshipRef = new Firebase("https://basedgod.firebaseio.com/");
+// var themesong = new Audio("battlesongless.wav");
+var playersRef = battleshipRef.child('players');
+var turnRef = battleshipRef.child('playerOneTurnRef');
+var numPlayers, selfRef, oponentRef;
+
+
+
+playersRef.on('value', (snap)=> {
+  numPlayers = snap.numChildren()
+  if (numPlayers === 2){
+    let playerKeys = snap.val()
+  }
+})
+function addPlayer (playerName) {
+  // if (numPlayers < 2){
+    selfRef = playersRef.push(playerName);
+    let selfRefKey = selfRef.path.pieces_[1];
+    console.log(selfRef.child(selfRefKey));
+    playersRef.child(selfRefKey).onDisconnect().remove();
+  // }
+}
 
 function init(){
-  themesong.play();
-  var rotated = false
-  var $quare = $(".PlayBoard td"),
+  $('#addPlayer').on('submit', function(event){
+    event.preventDefault();
+    let newPlayer = $('#name').val();
+    addPlayer(newPlayer);
+  })
+
+  // themesong.play();
+
+  var rotated = false;
+  var $square = $(".PlayBoard td"),
   shipPlacements = [];
   for (var i =0; i<100;i++){
     shipPlacements.push(false);
   }
+
   function preGame(){
     $("#rotate").on("click", function(){
       rotated = rotated ? false : true
     })
     var shipsToPlace = 5;
-    $quare.hover(highlightPlacement);
-    $quare.on("click", placeShips);
+    $square.hover(highlightPlacement);
+    $square.on("click", placeShips);
 
     function isValid(tiles){
       var valid=true
@@ -38,7 +66,7 @@ function init(){
             shipPlacements[tile.data("id")]=true;
           });
           if(!(--shipsToPlace)){
-            $quare.off()
+            $square.off()
             gameBegin()
           }
         }
@@ -55,7 +83,6 @@ function init(){
       }
     }
   }
-
   function getTiles(placement){
     var secondTile,
     firstTile;
@@ -114,7 +141,6 @@ function init(){
         var ob = dataSnapshot.val();
         hit = ob.shipLocations.shipLocations[squareVal]
         if(hit){
-          console.log("HIT!");
           explosion.play();
           $('.oppBoard').attr('onLoad', 'quake();');
           $guessedSquare.addClass("hit").off();
@@ -136,10 +162,12 @@ function init(){
   preGame()
 }
 
+
+
 // function
 
 // function go() {
-//   var userId = prompt('Username?', 'Guest');
+// var userId = prompt('Username?', 'Guest');
 //   var fireRef = new Firebase("https://battleship-2015.firebaseio.com/");
 //   assignPlayerNumberAndPlayGame(userId, fireRef);
 // };
