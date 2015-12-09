@@ -8,23 +8,22 @@ let numPlayers, selfRefKey, selfRef, opponentRef, playerKeys, selfBoardRef, oppB
 
 
 function init(){
+  let $playerDiv = $("#playerDiv")
   playersRef.on('value', (snap)=> {
-    numPlayers = snap.numChildren()
+    numPlayers = snap.numChildren();
     if (numPlayers === 2){
       playerKeys = snap.val();
       preGame();
       playersRef.off();
-      $("#playerDiv").text("Place your ships and wait for opponent to place his!")
+      $playerDiv.text("Place your ships and wait for opponent to place his/hers!")
     }
   })
   let $addPlayer = $("#addPlayer");
-  let $playerDiv = $("#playerDiv")
   $addPlayer.on('submit', function(event){
     event.preventDefault();
     let newPlayer = $('#name').val();
     addPlayer(newPlayer);
     $addPlayer.remove()
-    $("#playerDiv").text("Waiting for another player, or open a new window to play against yourself!")
   })
   let shipPlacements = [];
   for (var i =0; i<100;i++){
@@ -34,24 +33,25 @@ function init(){
 
   function addPlayer (playerName) {
     if (numPlayers < 2){
+      $("#playerDiv").text("Waiting for another player, or open a new window to play against yourself!")
       playerNum = (numPlayers === 0) ? 1 : 2;
       selfRef = playersRef.push(playerName);
-      selfRefKey = selfRef.path.pieces_[1];
+      selfRefKey = selfRef.path.o[1];
       playersRef.child(selfRefKey).onDisconnect().remove();
     }
-    else alert("Too many players")
+    else alert("Too many players");
   }
 
-  // themesong.play();
+  themesong.play();
+
 
   var rotated = false;
-
   function preGame(){
     var $square = $(".PlayBoard td");
     $("#rotate").on("click", function(){
-      rotated = rotated ? false : true
+      rotated = !rotated
     })
-    var shipsToPlace = 1;
+    var shipsToPlace = 5;
     $square.hover(highlightPlacement);
     $square.on("click", placeShips);
 
@@ -76,7 +76,7 @@ function init(){
           });
           if(!(--shipsToPlace)){
             $square.off();
-
+            $playerDiv.text("Wait for your opponent to place!");
             assignPlayers();
           }
         }
@@ -150,14 +150,15 @@ function init(){
     selfBoardRef = selfRef.set({
       shipLocations: shipPlacements
     })
-    let tempKey = placementDoneRef.push(true).path.pieces_[1];
+    let tempKey = placementDoneRef.push(true).path.o[1];
     placementDoneRef.child(tempKey).onDisconnect().remove()
   }
 
 
   function gameBegin(){
-    oppBoardRef = opponentRef.child('shipLocations')
-    $("#rotate").remove()
+    $playerDiv.text("BATTLESHIPS!");
+    oppBoardRef = opponentRef.child('shipLocations');
+    $("#rotate").remove();
     let isCurrentPlayerTurn;
     turnRef.on('value', (snap)=> {
       let turnVal = snap.val().playerOne;
@@ -172,6 +173,7 @@ function init(){
     function hitOrNah(e){
       e.preventDefault()
       if(isCurrentPlayerTurn=== playerNum){
+        $playerDiv.text("BATTLESHIPS!");
         isCurrentPlayerTurn = isCurrentPlayerTurn === 1 ? 2 : 1;
         turnRef.set({
           playerOne: isCurrentPlayerTurn
@@ -184,8 +186,7 @@ function init(){
         oppBoardRef.once('value', snap=>{
           let hit = snap.val()[squareVal]
           if(hit){
-            //         explosion.play();
-            //         $('.oppBoard').attr('onLoad', 'quake();');
+            explosion.play();
             $guessedSquare.addClass("hit").off();
             hits++;
             if(hits === 15){
@@ -198,6 +199,10 @@ function init(){
             splash.play();
           }
         })
+      }
+      else {
+        $playerDiv.text("Not your turn!");
+        $playerDiv.fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
       }
     }
   }

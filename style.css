@@ -6,6 +6,11 @@ body {
 #header {
   width: 100%;
 }
+#playerDiv {
+  color: ghostwhite;
+  font-size: 18px;
+}
+
 td {
   opacity: 20%;
   border: 2px solid black;
