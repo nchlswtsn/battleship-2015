@@ -1,22 +1,58 @@
 "use strict";
-var fireRef = new Firebase("https://battleship-2015.firebaseio.com/");
+var battleshipRef = new Firebase("https://basedgod.firebaseio.com/");
 var themesong = new Audio("battlesongless.wav");
+var playersRef = battleshipRef.child('players');
+var turnRef = battleshipRef.child('turn');
+let placementDoneRef = battleshipRef.child('placementDoneRef')
+let numPlayers, isOn = false, selfRefKey, selfRef, opponentRef, playerKeys, selfBoardRef, playerNum;
+
 
 function init(){
-  themesong.play();
-  var rotated = false
-  var $quare = $(".PlayBoard td"),
-  shipPlacements = [];
+  var $square = $(".PlayBoard td");
+  let $playerDiv = $("#playerDiv")
+  playersRef.on('value', (snap)=> {
+    numPlayers = snap.numChildren();
+    if (numPlayers === 2){
+      playerKeys = snap.val();
+      preGame();
+      playersRef.off();
+      $playerDiv.text("Place your ships and wait for opponent to place his/hers!")
+    }
+  })
+  let $addPlayer = $("#addPlayer");
+  $addPlayer.on('submit', function(event){
+    event.preventDefault();
+    let newPlayer = $('#name').val();
+    addPlayer(newPlayer);
+    $addPlayer.remove()
+  })
+  let shipPlacements = [];
   for (var i =0; i<100;i++){
     shipPlacements.push(false);
   }
+
+  function addPlayer (playerName) {
+    if (numPlayers < 2){
+      $("#playerDiv").text("Waiting for another player, or open a new window to play against yourself!")
+      playerNum = (numPlayers === 0) ? 1 : 2;
+      selfRef = playersRef.push(playerName);
+      selfRefKey = selfRef.path.o[1];
+      playersRef.child(selfRefKey).onDisconnect().remove();
+    }
+    else alert("Too many players");
+  }
+
+  // themesong.play();
+
+
+  var rotated = false;
   function preGame(){
     $("#rotate").on("click", function(){
-      rotated = rotated ? false : true
+      rotated = !rotated
     })
     var shipsToPlace = 5;
-    $quare.hover(highlightPlacement);
-    $quare.on("click", placeShips);
+    $square.hover(highlightPlacement);
+    $square.on("click", placeShips);
 
     function isValid(tiles){
       var valid=true
@@ -38,8 +74,9 @@ function init(){
             shipPlacements[tile.data("id")]=true;
           });
           if(!(--shipsToPlace)){
-            $quare.off()
-            gameBegin()
+            $square.off();
+            $playerDiv.text("Wait for your opponent to place!");
+            assignPlayers();
           }
         }
       }
@@ -55,7 +92,6 @@ function init(){
       }
     }
   }
-
   function getTiles(placement){
     var secondTile,
     firstTile;
@@ -94,128 +130,110 @@ function init(){
     return tiles
   }
 
-  function gameBegin(){
-    var hits =0;
-    $("#rotate").remove()
-    var gameSet = fireRef.child("shipLocations");
-    gameSet.set({
+  function assignPlayers() {
+
+    placementDoneRef.on('value', (snap)=> {
+      if (snap.numChildren() === 2){
+        gameBegin()
+        placementDoneRef.off()
+        turnRef.set({
+          playerOne: 1
+        });
+      }
+    })
+    for (let key in playerKeys){
+      if (key !== selfRefKey){
+        opponentRef = playersRef.child(key)
+      }
+    }
+    selfBoardRef = selfRef.set({
       shipLocations: shipPlacements
     })
+    let tempKey = placementDoneRef.push(true).path.o[1];
+    placementDoneRef.child(tempKey).onDisconnect().remove()
+  }
+
+
+  function gameBegin(){
+    let oppBoardRef = opponentRef.child('shipLocations');
+    let oppGuessRef = opponentRef.child('guess');
+    let hitsTaken = 0;
+    oppGuessRef.on('value', snap => {
+      let guess = snap.val()
+      let guessedSquare = $square[guess["key"]]
+      if(guess.hit) hitsTaken++
+      guessedSquare.className += guess.hit ? " hit" : " miss"
+      if(hitsTaken === 15) {
+        loseScenario();
+      }
+    });
+    $("#rotate").remove();
+    let currentPlayerTurn;
+    turnRef.on('value', (snap)=> {
+      let turnVal = snap.val().playerOne;
+      currentPlayerTurn = turnVal;
+      $playerDiv.text(currentPlayerTurn === playerNum ? "Your turn!" : "Opponent's turn!");
+    });
+    var hits =0;
+
+
     var $OppBoard = $(".OppBoard td");
     $OppBoard.click(hitOrNah);
 
     function hitOrNah(e){
-      var splash = new Audio("splash.wav");
-      var explosion = new Audio("explosion.wav");
-      var $guessedSquare = $(this);
-      var squareVal = $guessedSquare.data("id");
-      fireRef.once('value', function(dataSnapshot){
-        var hit;
-        var ob = dataSnapshot.val();
-        hit = ob.shipLocations.shipLocations[squareVal]
-        if(hit){
-          console.log("HIT!");
-          explosion.play();
-          $('.oppBoard').attr('onLoad', 'quake();');
-          $guessedSquare.addClass("hit").off();
-          hits++;
-          if(hits === 15){
-            $OppBoard.off()
-            alert("YOU WIN!");
+      e.preventDefault()
+      if(currentPlayerTurn === playerNum){
+        currentPlayerTurn = currentPlayerTurn === 1 ? 2 : 1;
+        turnRef.set({
+          playerOne: currentPlayerTurn
+        });
 
 
+        var splash = new Audio("splash.wav");
+        var explosion = new Audio("explosion.wav");
+        var $guessedSquare = $(this);
+        var squareVal = $guessedSquare.data("id");
+
+        oppBoardRef.once('value', snap=>{
+          let hit = snap.val()[squareVal];
+          let guess = {key: squareVal, hit: hit};
+          let selfGuessRef = selfRef.update({
+            guess: guess
+          })
+          if(hit){
+            explosion.play();
+            $guessedSquare.addClass("hit").off();
+            hits++;
+            if(hits === 15){
+              winScenario();
+            }
           }
-        }
-        else {
-          $guessedSquare.addClass("miss");
-          splash.play();
-        }
-      })
+          else {
+            $guessedSquare.addClass("miss").off();
+            splash.play();
+          }
+        })
+      }
+      else {
+        $playerDiv.text("Not your turn!");
+        $('body').fadeOut(100).fadeIn(100);
+      }
+    }
+    let winScenario = () =>{
+      $OppBoard.off()
+      alert('You Win!')
+      $playerDiv.text("Winner!");
+    }
+    let loseScenario = () =>{
+      $OppBoard.off()
+      alert('You lose!')
+      $playerDiv.text("Loser!");
     }
   }
-  preGame()
 }
 
-// function
 
-// function go() {
-//   var userId = prompt('Username?', 'Guest');
-//   var fireRef = new Firebase("https://battleship-2015.firebaseio.com/");
-//   assignPlayerNumberAndPlayGame(userId, fireRef);
-// };
-//
-// // The maximum number of players.  If there are already
-// // NUM_PLAYERS assigned, users won't be able to join the game.
-// var NUM_PLAYERS = "2";
-//
-// // The root of your game data.
-// var GAME_LOCATION = 'https://battleship-2015.firebaseio.com/';
-//
-// // A location under GAME_LOCATION that will store the list of
-// // players who have joined the game (up to MAX_PLAYERS).
-// var PLAYERS_LOCATION = 'player_list';
-//
-// // A location under GAME_LOCATION that you will use to store data
-// // for each player (their game state, etc.)
-// var PLAYER_DATA_LOCATION = 'player_data';
-//
-//
-// // Called after player assignment completes.
-// function playGame(myPlayerNumber, userId, justJoinedGame, fireRef) {
-//   var playerDataRef = fireRef.child(PLAYER_DATA_LOCATION).child(myPlayerNumber);
-//   if (justJoinedGame) {
-//     playerDataRef.set({userId: userId, state: 'game state'});
-//   }
-// }
-//
-// // Use transaction() to assign a player number, then call playGame().
-// function assignPlayerNumberAndPlayGame(userId, fireRef) {
-//   var playerListRef = fireRef.child(PLAYERS_LOCATION);
-//   var myPlayerNumber, alreadyInGame = false;
-//
-//   playerListRef.transaction(function(playerList) {
-//     // Attempt to (re)join the given game. Notes:
-//     //
-//     // 1. Upon very first call, playerList will likely appear null (even if the
-//     // list isn't empty), since Firebase runs the update function optimistically
-//     // before it receives any data.
-//     // 2. The list is assumed not to have any gaps (once a player joins, they
-//     // don't leave).
-//     // 3. Our update function sets some external variables but doesn't act on
-//     // them until the completion callback, since the update function may be
-//     // called multiple times with different data.
-//     if (playerList === null) {
-//       playerList = [];
-//     }
-//
-//     for (var i = 0; i < playerList.length; i++) {
-//       if (playerList[i] === userId) {
-//         // Already seated so abort transaction to not unnecessarily update playerList.
-//         alreadyInGame = true;
-//         myPlayerNumber = i; // Tell completion callback which seat we have.
-//         return;
-//       }
-//     }
-//
-//     if (i < NUM_PLAYERS) {
-//       // Empty seat is available so grab it and attempt to commit modified playerList.
-//       playerList[i] = userId;  // Reserve our seat.
-//       myPlayerNumber = i; // Tell completion callback which seat we reserved.
-//       return playerList;
-//     }
-//
-//     // Abort transaction and tell completion callback we failed to join.
-//     myPlayerNumber = null;
-//   }, function (error, committed) {
-//     // Transaction has completed.  Check if it succeeded or we were already in
-//     // the game and so it was aborted.
-//     if (committed || alreadyInGame) {
-//       playGame(myPlayerNumber, userId, !alreadyInGame, fireRef);
-//     } else {
-//       alert('Game is full.  Can\'t join. :-(');
-//     }
-//   });
-// }
+
 
 
 
