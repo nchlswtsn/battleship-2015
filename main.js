@@ -51,7 +51,7 @@ function init(){
     $("#rotate").on("click", function(){
       rotated = rotated ? false : true
     })
-    var shipsToPlace = 5;
+    var shipsToPlace = 1;
     $square.hover(highlightPlacement);
     $square.on("click", placeShips);
 
@@ -134,12 +134,11 @@ function init(){
   function assignPlayers() {
 
     placementDoneRef.on('value', (snap)=> {
-      console.log();
       if (snap.numChildren() === 2){
         gameBegin()
         placementDoneRef.off()
         turnRef.set({
-          playerOne: true
+          playerOne: 1
         });
       }
     })
@@ -148,8 +147,7 @@ function init(){
         opponentRef = playersRef.child(key)
       }
     }
-    selfBoardRef = selfRef.child('board');
-    selfBoardRef.set({
+    selfBoardRef = selfRef.set({
       shipLocations: shipPlacements
     })
     let tempKey = placementDoneRef.push(true).path.pieces_[1];
@@ -158,18 +156,12 @@ function init(){
 
 
   function gameBegin(){
-    // var battleshipRef = new Firebase("https://basedgod.firebaseio.com/");
-    // var themesong = new Audio("battlesongless.wav");
-    // var playersRef = battleshipRef.child('players');
-    // var turnRef = battleshipRef.child('turn');
-    // let placementDoneRef = battleshipRef.child('placementDoneRef')
-    // let numPlayers, selfRefKey, selfRef, opponentRef, playerKeys, selfBoardRef, oppBoardRef, playerNum;
+    oppBoardRef = opponentRef.child('shipLocations')
     $("#rotate").remove()
     let isCurrentPlayerTurn;
     turnRef.on('value', (snap)=> {
-      let turnVal = snap.val().playerOne
-      isCurrentPlayerTurn = playerNum === 1 ? turnVal : !turnVal;
-      console.log(isCurrentPlayerTurn);
+      let turnVal = snap.val().playerOne;
+      isCurrentPlayerTurn = turnVal;
     });
     var hits =0;
 
@@ -178,34 +170,34 @@ function init(){
     $OppBoard.click(hitOrNah);
 
     function hitOrNah(e){
-      if(isCurrentPlayerTurn){
-        console.log('hi');
+      e.preventDefault()
+      if(isCurrentPlayerTurn=== playerNum){
+        isCurrentPlayerTurn = isCurrentPlayerTurn === 1 ? 2 : 1;
+        turnRef.set({
+          playerOne: isCurrentPlayerTurn
+        });
 
-        //     var splash = new Audio("splash.wav");
-        //     var explosion = new Audio("explosion.wav");
-        //     var $guessedSquare = $(this);
-        //     var squareVal = $guessedSquare.data("id");
-        //     fireRef.once('value', function(dataSnapshot){
-        //       var hit;
-        //       var ob = dataSnapshot.val();
-        //       hit = ob.shipLocations.shipLocations[squareVal]
-        //       if(hit){
-        //         explosion.play();
-        //         $('.oppBoard').attr('onLoad', 'quake();');
-        //         $guessedSquare.addClass("hit").off();
-        //         hits++;
-        //         if(hits === 15){
-        //           $OppBoard.off()
-        //           alert("YOU WIN!");
-        //
-        //
-        //         }
-        //       }
-        //       else {
-        //         $guessedSquare.addClass("miss");
-        //         splash.play();
-        //       }
-        //     })
+        var splash = new Audio("splash.wav");
+        var explosion = new Audio("explosion.wav");
+        var $guessedSquare = $(this);
+        var squareVal = $guessedSquare.data("id");
+        oppBoardRef.once('value', snap=>{
+          let hit = snap.val()[squareVal]
+          if(hit){
+            //         explosion.play();
+            //         $('.oppBoard').attr('onLoad', 'quake();');
+            $guessedSquare.addClass("hit").off();
+            hits++;
+            if(hits === 15){
+              $OppBoard.off()
+              alert("YOU WIN!");
+            }
+          }
+          else {
+            $guessedSquare.addClass("miss").off();
+            splash.play();
+          }
+        })
       }
     }
   }
