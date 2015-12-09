@@ -2,39 +2,44 @@
 var battleshipRef = new Firebase("https://basedgod.firebaseio.com/");
 var themesong = new Audio("battlesongless.wav");
 var playersRef = battleshipRef.child('players');
-var turnRef = battleshipRef.child('playerOneTurnRef');
+var turnRef = battleshipRef.child('turn');
 let placementDoneRef = battleshipRef.child('placementDoneRef')
-let numPlayers, selfRefKey, selfRef, opponentRef, playerKeys, selfBoardRef, oppBoardRef;
+let numPlayers, selfRefKey, selfRef, opponentRef, playerKeys, selfBoardRef, oppBoardRef, playerNum;
+
 
 function init(){
+  playersRef.on('value', (snap)=> {
+    numPlayers = snap.numChildren()
+    if (numPlayers === 2){
+      playerKeys = snap.val();
+      preGame();
+      playersRef.off();
+      $("#playerDiv").text("Place your ships and wait for opponent to place his!")
+    }
+  })
   let $addPlayer = $("#addPlayer");
   let $playerDiv = $("#playerDiv")
   $addPlayer.on('submit', function(event){
     event.preventDefault();
     let newPlayer = $('#name').val();
     addPlayer(newPlayer);
-    // $addPlayer.remove()
-    // $("#playerDiv").text("Waiting for another player")
+    $addPlayer.remove()
+    $("#playerDiv").text("Waiting for another player, or open a new window to play against yourself!")
   })
   let shipPlacements = [];
   for (var i =0; i<100;i++){
     shipPlacements.push(false);
   }
 
-  playersRef.on('value', (snap)=> {
-    numPlayers = snap.numChildren()
-    if (numPlayers === 2){
-      playerKeys = snap.val()
-      preGame()
-    }
-  })
 
   function addPlayer (playerName) {
     if (numPlayers < 2){
+      playerNum = (numPlayers === 0) ? 1 : 2;
       selfRef = playersRef.push(playerName);
       selfRefKey = selfRef.path.pieces_[1];
       playersRef.child(selfRefKey).onDisconnect().remove();
     }
+    else alert("Too many players")
   }
 
   // themesong.play();
@@ -70,8 +75,9 @@ function init(){
             shipPlacements[tile.data("id")]=true;
           });
           if(!(--shipsToPlace)){
-            $square.off()
-            assignPlayers()
+            $square.off();
+
+            assignPlayers();
           }
         }
       }
@@ -125,71 +131,83 @@ function init(){
     return tiles
   }
 
-  // var battleshipRef = new Firebase("https://basedgod.firebaseio.com/");
-  // // var themesong = new Audio("battlesongless.wav");
-  // var playersRef = battleshipRef.child('players');
-  // var turnRef = battleshipRef.child('playerOneTurnRef');
-  // let placementDoneRef = battleshipRef.child('placementDoneRef')
-  // var numPlayers, selfRef, opponentRef, playerKeys;
-
   function assignPlayers() {
+
     placementDoneRef.on('value', (snap)=> {
+      console.log();
       if (snap.numChildren() === 2){
         gameBegin()
+        placementDoneRef.off()
+        turnRef.set({
+          playerOne: true
+        });
       }
     })
     for (let key in playerKeys){
       if (key !== selfRefKey){
         opponentRef = playersRef.child(key)
-        console.log(key);
       }
     }
     selfBoardRef = selfRef.child('board');
     selfBoardRef.set({
       shipLocations: shipPlacements
     })
-    placementDoneRef.push(true)
+    let tempKey = placementDoneRef.push(true).path.pieces_[1];
+    placementDoneRef.child(tempKey).onDisconnect().remove()
   }
 
 
   function gameBegin(){
-    // console.log(playersRef);
-    //   var hits =0;
-    //   $("#rotate").remove()
-    //   var gameSet = fireRef.child("shipLocations");
-    //   gameSet.set({
-    //     shipLocations: shipPlacements
-    //   })
-    //   var $OppBoard = $(".OppBoard td");
-    //   $OppBoard.click(hitOrNah);
-    //
-    //   function hitOrNah(e){
-    //     var splash = new Audio("splash.wav");
-    //     var explosion = new Audio("explosion.wav");
-    //     var $guessedSquare = $(this);
-    //     var squareVal = $guessedSquare.data("id");
-    //     fireRef.once('value', function(dataSnapshot){
-    //       var hit;
-    //       var ob = dataSnapshot.val();
-    //       hit = ob.shipLocations.shipLocations[squareVal]
-    //       if(hit){
-    //         explosion.play();
-    //         $('.oppBoard').attr('onLoad', 'quake();');
-    //         $guessedSquare.addClass("hit").off();
-    //         hits++;
-    //         if(hits === 15){
-    //           $OppBoard.off()
-    //           alert("YOU WIN!");
-    //
-    //
-    //         }
-    //       }
-    //       else {
-    //         $guessedSquare.addClass("miss");
-    //         splash.play();
-    //       }
-    //     })
-    //   }
+    // var battleshipRef = new Firebase("https://basedgod.firebaseio.com/");
+    // var themesong = new Audio("battlesongless.wav");
+    // var playersRef = battleshipRef.child('players');
+    // var turnRef = battleshipRef.child('turn');
+    // let placementDoneRef = battleshipRef.child('placementDoneRef')
+    // let numPlayers, selfRefKey, selfRef, opponentRef, playerKeys, selfBoardRef, oppBoardRef, playerNum;
+    $("#rotate").remove()
+    let isCurrentPlayerTurn;
+    turnRef.on('value', (snap)=> {
+      let turnVal = snap.val().playerOne
+      isCurrentPlayerTurn = playerNum === 1 ? turnVal : !turnVal;
+      console.log(isCurrentPlayerTurn);
+    });
+    var hits =0;
+
+
+    var $OppBoard = $(".OppBoard td");
+    $OppBoard.click(hitOrNah);
+
+    function hitOrNah(e){
+      if(isCurrentPlayerTurn){
+        console.log('hi');
+
+        //     var splash = new Audio("splash.wav");
+        //     var explosion = new Audio("explosion.wav");
+        //     var $guessedSquare = $(this);
+        //     var squareVal = $guessedSquare.data("id");
+        //     fireRef.once('value', function(dataSnapshot){
+        //       var hit;
+        //       var ob = dataSnapshot.val();
+        //       hit = ob.shipLocations.shipLocations[squareVal]
+        //       if(hit){
+        //         explosion.play();
+        //         $('.oppBoard').attr('onLoad', 'quake();');
+        //         $guessedSquare.addClass("hit").off();
+        //         hits++;
+        //         if(hits === 15){
+        //           $OppBoard.off()
+        //           alert("YOU WIN!");
+        //
+        //
+        //         }
+        //       }
+        //       else {
+        //         $guessedSquare.addClass("miss");
+        //         splash.play();
+        //       }
+        //     })
+      }
+    }
   }
 }
 
