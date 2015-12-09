@@ -4,10 +4,11 @@ var themesong = new Audio("battlesongless.wav");
 var playersRef = battleshipRef.child('players');
 var turnRef = battleshipRef.child('turn');
 let placementDoneRef = battleshipRef.child('placementDoneRef')
-let numPlayers, selfRefKey, selfRef, opponentRef, playerKeys, selfBoardRef, oppBoardRef, playerNum;
+let numPlayers, isOn = false, selfRefKey, selfRef, opponentRef, playerKeys, selfBoardRef, playerNum;
 
 
 function init(){
+  var $square = $(".PlayBoard td");
   let $playerDiv = $("#playerDiv")
   playersRef.on('value', (snap)=> {
     numPlayers = snap.numChildren();
@@ -30,7 +31,6 @@ function init(){
     shipPlacements.push(false);
   }
 
-
   function addPlayer (playerName) {
     if (numPlayers < 2){
       $("#playerDiv").text("Waiting for another player, or open a new window to play against yourself!")
@@ -42,16 +42,15 @@ function init(){
     else alert("Too many players");
   }
 
-  themesong.play();
+  // themesong.play();
 
 
   var rotated = false;
   function preGame(){
-    var $square = $(".PlayBoard td");
     $("#rotate").on("click", function(){
       rotated = !rotated
     })
-    var shipsToPlace = 5;
+    var shipsToPlace = 1;
     $square.hover(highlightPlacement);
     $square.on("click", placeShips);
 
@@ -156,13 +155,24 @@ function init(){
 
 
   function gameBegin(){
-    $playerDiv.text("BATTLESHIPS!");
-    oppBoardRef = opponentRef.child('shipLocations');
+    let oppBoardRef = opponentRef.child('shipLocations');
+    let oppGuessRef = opponentRef.child('guess');
+    let hitsTaken = 0;
+    oppGuessRef.on('value', snap => {
+      let guess = snap.val()
+      let guessedSquare = $square[guess["key"]]
+      if(guess.hit) hitsTaken++
+      guessedSquare.className += guess.hit ? " hit" : " miss"
+      if(hitsTaken === 3) {
+        loseScenario();
+      }
+    });
     $("#rotate").remove();
-    let isCurrentPlayerTurn;
+    let currentPlayerTurn;
     turnRef.on('value', (snap)=> {
       let turnVal = snap.val().playerOne;
-      isCurrentPlayerTurn = turnVal;
+      currentPlayerTurn = turnVal;
+      $playerDiv.text(currentPlayerTurn === playerNum ? "Your turn!" : "Opponent's turn!");
     });
     var hits =0;
 
@@ -172,26 +182,30 @@ function init(){
 
     function hitOrNah(e){
       e.preventDefault()
-      if(isCurrentPlayerTurn=== playerNum){
-        $playerDiv.text("BATTLESHIPS!");
-        isCurrentPlayerTurn = isCurrentPlayerTurn === 1 ? 2 : 1;
+      if(currentPlayerTurn === playerNum){
+        currentPlayerTurn = currentPlayerTurn === 1 ? 2 : 1;
         turnRef.set({
-          playerOne: isCurrentPlayerTurn
+          playerOne: currentPlayerTurn
         });
+
 
         var splash = new Audio("splash.wav");
         var explosion = new Audio("explosion.wav");
         var $guessedSquare = $(this);
         var squareVal = $guessedSquare.data("id");
+
         oppBoardRef.once('value', snap=>{
-          let hit = snap.val()[squareVal]
+          let hit = snap.val()[squareVal];
+          let guess = {key: squareVal, hit: hit};
+          let selfGuessRef = selfRef.update({
+            guess: guess
+          })
           if(hit){
             explosion.play();
             $guessedSquare.addClass("hit").off();
             hits++;
-            if(hits === 15){
-              $OppBoard.off()
-              alert("YOU WIN!");
+            if(hits === 3){
+              winScenario();
             }
           }
           else {
@@ -202,8 +216,18 @@ function init(){
       }
       else {
         $playerDiv.text("Not your turn!");
-        $playerDiv.fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+        $('body').fadeOut(100).fadeIn(100);
       }
+    }
+    let winScenario = () =>{
+      $OppBoard.off()
+      alert('You Win!')
+      $playerDiv.text("Winner!");
+    }
+    let loseScenario = () =>{
+      $OppBoard.off()
+      alert('You lose!')
+      $playerDiv.text("Loser!");
     }
   }
 }
