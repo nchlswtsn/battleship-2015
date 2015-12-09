@@ -50,7 +50,7 @@ function init(){
     $("#rotate").on("click", function(){
       rotated = !rotated
     })
-    var shipsToPlace = 1;
+    var shipsToPlace = 5;
     $square.hover(highlightPlacement);
     $square.on("click", placeShips);
 
@@ -163,7 +163,7 @@ function init(){
       let guessedSquare = $square[guess["key"]]
       if(guess.hit) hitsTaken++
       guessedSquare.className += guess.hit ? " hit" : " miss"
-      if(hitsTaken === 3) {
+      if(hitsTaken === 15) {
         loseScenario();
       }
     });
@@ -204,7 +204,7 @@ function init(){
             explosion.play();
             $guessedSquare.addClass("hit").off();
             hits++;
-            if(hits === 3){
+            if(hits === 15){
               winScenario();
             }
           }
