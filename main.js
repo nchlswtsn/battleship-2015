@@ -42,7 +42,7 @@ function init(){
     else alert("Too many players");
   }
 
-  // themesong.play();
+  themesong.play();
 
 
   var rotated = false;
