@@ -8,9 +8,7 @@
 <body>
   <div id="header"><img src="logo.png" alt=""></div>
   <div id='playerDiv'>
-    <form id='addPlayer'>
-      <input type='submit'>
-    </form>
+    <button id='addPlayer' type='submit'>Join Game</button>
   </div>
   <div class="PlayBoard">
     <table>
@@ -139,10 +137,9 @@
     </table>
   </div>
   <button id="rotate">Rotate 90</button>
-  <div>
-    Make your guess here!
-  </div>
   <div class="OppBoard">
+    <div id="opp-board-message">
+    </div>
     <table>
       <tbody>
         <tr data-id="J">

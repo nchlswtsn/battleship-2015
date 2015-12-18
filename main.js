@@ -20,10 +20,9 @@ function init(){
     }
   })
   let $addPlayer = $("#addPlayer");
-  $addPlayer.on('submit', function(event){
+  $addPlayer.on('click', function(event){
     event.preventDefault();
-    let newPlayer = $('#name').val();
-    addPlayer(newPlayer);
+    addPlayer();
     $addPlayer.remove()
   })
   let shipPlacements = [];
@@ -31,11 +30,11 @@ function init(){
     shipPlacements.push(false);
   }
 
-  function addPlayer (playerName) {
+  function addPlayer () {
     if (numPlayers < 2){
-      $("#playerDiv").text("Waiting for another player, or open a new window to play against yourself!")
+      $playerDiv.text("Waiting for another player, or open a new window to play against yourself!")
       playerNum = (numPlayers === 0) ? 1 : 2;
-      selfRef = playersRef.push(playerName);
+      selfRef = playersRef.push("player" +playerNum);
       selfRefKey = selfRef.path.o[1];
       playersRef.child(selfRefKey).onDisconnect().remove();
     }
@@ -157,6 +156,7 @@ function init(){
   function gameBegin(){
     let oppBoardRef = opponentRef.child('shipLocations');
     let oppGuessRef = opponentRef.child('guess');
+    $("#opp-board-message").text("Make your guess here!");
     let hitsTaken = 0;
     oppGuessRef.on('value', snap => {
       let guess = snap.val()

@@ -11,6 +11,10 @@ body {
   font-size: 18px;
 }
 
+#opp-board-message {
+  text-align: center;
+}
+
 td {
   opacity: 20%;
   border: 2px solid black;
@@ -46,4 +50,8 @@ button {
   margin-top: 19.5%;
   height: 30px;
   background-color: darkgray;
+}
+
+button#addPlayer {
+  margin-top: 0px;
 }
