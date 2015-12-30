@@ -11,13 +11,17 @@ body {
   width: 100%;
 }
 #playerDiv {
-  color: ghostwhite;
+  color: white;
   font-size: 18px;
 }
 
 #opp-board-message {
   text-align: center;
-  color: ghostwhite;
+  color: white;
+}
+
+.hidden {
+  display: none;
 }
 
 td {
@@ -27,15 +31,7 @@ td {
   width: 50px;
   height: 50px;
 }
-.PlayBoard {
-  cursor: pointer;
-  float: left;
-}
-.OppBoard {
-  cursor: url(bomb.png), default;
-  float: right;
-}
-.highlight{
+td.highlight{
   background-color: silver;
 }
 td.hit {
@@ -48,12 +44,21 @@ td.miss {
   width: 50px;
   height: 50px;
 }
-.ship{
+td.ship{
   background-color: black;
+}
+.PlayBoard {
+  cursor: pointer;
+  float: left;
+}
+.OppBoard {
+  cursor: url(bomb.png), default;
+  float: right;
 }
 button {
   margin-top: 19.5%;
   height: 30px;
+  border-radius: 5px;
   background-color: darkgray;
 }
 

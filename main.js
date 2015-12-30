@@ -41,11 +41,11 @@ function init(){
     else alert("Too many players");
   }
 
-  themesong.play();
 
 
   var rotated = false;
   function preGame(){
+    $("#rotate").removeClass('hidden')
     $("#rotate").on("click", function(){
       rotated = !rotated
     })
@@ -154,6 +154,7 @@ function init(){
 
 
   function gameBegin(){
+    themesong.play();
     let oppBoardRef = opponentRef.child('shipLocations');
     let oppGuessRef = opponentRef.child('guess');
     $("#opp-board-message").text("Make your guess here!");
